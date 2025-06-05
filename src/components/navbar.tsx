@@ -1,0 +1,43 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { NavbarLink, NavbarAccountDropdown } from "./navbar-helpers";
+
+const linkSessionState = true;
+
+export default function Navbar() {
+  return (
+    <div className="h-15 shadow-md">
+      <div className="flex justify-between px-6 py-3 items-center h-full">
+        <div className="w-1/3">
+          <Image
+            src="/qr-code.png"
+            width={50}
+            height={50}
+            alt="qr-code"
+            onClick={() => redirect("/")}
+            className="cursor-pointer"
+          />
+        </div>
+        <div className="w-1/3 flex justify-center">
+          <h1
+            className="text-xl font-bold select-none cursor-pointer"
+            onClick={() => redirect("/")}
+          >
+            QR GENERATOR
+          </h1>
+        </div>
+        <div className="w-1/3 flex justify-end gap-5">
+          {linkSessionState ? (
+            // <NavbarLink href="/account" title="Account" />
+            <NavbarAccountDropdown />
+          ) : (
+            <NavbarLink href="/signup" title="Sign Up" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
