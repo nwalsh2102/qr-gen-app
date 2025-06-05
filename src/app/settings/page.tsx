@@ -2,6 +2,11 @@ import SettingsForm from "@/components/settings/settings-form";
 import { getUserSettings } from "@/app/actions/get-user-settings";
 import NotAuthorizedCard from "@/components/not-authorized";
 
+export const metadata = {
+  title: "Settings - QR Code Generation",
+  description: "Next generation QR code generation, built with accounts",
+};
+
 export default async function Page() {
   const initialSettings = await getUserSettings();
 

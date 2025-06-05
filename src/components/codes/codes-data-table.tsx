@@ -4,8 +4,15 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ColumnDef,
   ColumnFiltersState,
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -33,6 +40,8 @@ export function CodesDataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -42,15 +51,17 @@ export function CodesDataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
       columnFilters,
+      columnVisibility,
       rowSelection,
     },
   });
 
   return (
-    <div>
+    <div className="transition-all duration-300 ease-in-out">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter URL's"
@@ -61,7 +72,7 @@ export function CodesDataTable<TData, TValue>({
           className="max-w-sm border border-ring"
         />
       </div>
-      <div className="border">
+      <div className="border transition-all duration-300 ease-in-out">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -81,7 +92,7 @@ export function CodesDataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="transition-all duration-300 ease-in-out">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

@@ -3,12 +3,23 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Download, Check, Trash2Icon } from "lucide-react";
+import { Download, Check, Trash2Icon, ExternalLink, Mail } from "lucide-react";
 import QRCode from "qrcode";
 import { toast } from "sonner";
 import { useState } from "react";
 import { deleteCode } from "@/app/actions/delete-code";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export type CodesType = {
   id: string;
@@ -18,37 +29,100 @@ export type CodesType = {
 };
 
 export const codesColumns: ColumnDef<CodesType>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        className="border-black cursor-pointer"
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        className="border-black cursor-pointer"
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // Enable later on when mass functions
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       className="border-black cursor-pointer"
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       className="border-black cursor-pointer"
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "id",
     header: "ID",
+    cell: ({ row }) => {
+      const code = row.original;
+
+      const [open, setOpen] = useState(false);
+
+      return (
+        <>
+          <span onClick={() => setOpen(true)} className="cursor-pointer">
+            {code.id}
+          </span>
+
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{code.url}</DialogTitle>
+                <DialogDescription>
+                  Detailed view for the QR code.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="">
+                <div className="mb-3">
+                  <h1>ID</h1>
+                  <p>{code.id}</p>
+                </div>
+                <div className="mb-3">
+                  <h1>URL</h1>
+                  <Link href={code.url} target="_blank" className="text-accent">
+                    <div className="flex gap-0.5">
+                      {code.url} <ExternalLink size={12} />
+                    </div>
+                  </Link>
+                </div>
+                <div className="mb-3">
+                  <h1>Created</h1>
+                  <p>{code.createdAt.toDateString()}</p>
+                </div>
+                <div className="mb-3">
+                  <h1>Updated</h1>
+                  <p>{code.updatedAt?.toDateString()}</p>
+                </div>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button className="cursor-pointer">Close</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      );
+    },
   },
   {
     accessorKey: "url",
     header: "URL",
+    cell: ({ row }) => {
+      const code = row.original;
+
+      return (
+        <Link href={code.url} target="_blank" className="text-accent">
+          <div className="flex gap-0.5">
+            {code.url} <ExternalLink size={12} />
+          </div>
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "createdAt",
@@ -64,24 +138,28 @@ export const codesColumns: ColumnDef<CodesType>[] = [
       }
     },
   },
-  {
-    accessorKey: "updatedAt",
-    header: "Updated",
-    cell: ({ row }) => {
-      const code = row.original;
-      const updated = code.updatedAt?.toString() || "";
+  // {
+  //   accessorKey: "updatedAt",
+  //   header: "Updated",
+  //   cell: ({ row }) => {
+  //     const code = row.original;
+  //     const updated = code.updatedAt?.toString() || "";
 
-      if (updated.length > 20) {
-        return <span>{updated.slice(0, 16)}</span>;
-      } else {
-        return <span>{updated}</span>;
-      }
-    },
-  },
+  //     if (updated.length > 20) {
+  //       return <span>{updated.slice(0, 16)}</span>;
+  //     } else {
+  //       return <span>{updated}</span>;
+  //     }
+  //   },
+  // },
   {
     id: "download",
     header: ({ table }) => (
-      <Button variant="ghost" size="sm">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="hover:bg-transparent hover:text-current"
+      >
         <Download />
       </Button>
     ),
@@ -152,7 +230,11 @@ export const codesColumns: ColumnDef<CodesType>[] = [
   {
     id: "delete",
     header: ({ table }) => (
-      <Button variant="ghost" size="sm">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="hover:bg-transparent hover:text-current"
+      >
         <Trash2Icon />
       </Button>
     ),
@@ -184,6 +266,27 @@ export const codesColumns: ColumnDef<CodesType>[] = [
           onClick={handleDelete}
         >
           <Trash2Icon />
+        </Button>
+      );
+    },
+  },
+  {
+    id: "email",
+    header: ({ table }) => (
+      <Button
+        variant="ghost"
+        size="sm"
+        className="hover:bg-transparent hover:text-current"
+      >
+        <Mail />
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const code = row.original;
+
+      return (
+        <Button variant="ghost" size="sm" className="cursor-pointer">
+          <Mail />
         </Button>
       );
     },

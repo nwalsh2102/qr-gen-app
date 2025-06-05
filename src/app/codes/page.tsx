@@ -13,6 +13,11 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import NotAuthorizedCard from "@/components/not-authorized";
 
+export const metadata = {
+  title: "My Codes - QR Code Generation",
+  description: "Next generation QR code generation, built with accounts",
+};
+
 export default async function Page() {
   // Get the user session
   const session = await auth.api.getSession({
@@ -46,7 +51,7 @@ export default async function Page() {
 
   return (
     <div className="grid h-screen place-items-center">
-      <Card>
+      <Card className="select-none transition-all duration-300 ease-in-out">
         <CardHeader>
           <CardTitle>QR Codes</CardTitle>
           <CardDescription>All previous QR codes.</CardDescription>
