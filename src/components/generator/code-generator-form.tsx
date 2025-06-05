@@ -26,7 +26,6 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Download, Loader2, Loader2Icon, Check } from "lucide-react";
 import { toast } from "sonner";
-import { SuccessToast } from "../toasts";
 import { redirect } from "next/navigation";
 
 const formSchema = z.object({

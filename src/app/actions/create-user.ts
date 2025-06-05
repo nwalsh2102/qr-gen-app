@@ -5,18 +5,18 @@ import { prisma } from "@/lib/prisma";
 import { hash } from "bcrypt";
 import { headers } from "next/headers";
 
-const session = await auth.api.getSession({
-  headers: await headers(), // you need to pass the headers object.
-});
-
 export async function createUser(data: {
   name: string;
   email: string;
   password: string;
 }) {
-  if (!session?.user.id) {
-    throw new Error("No user ID found in session");
-  }
+  const session = await auth.api.getSession({
+    headers: await headers(), // you need to pass the headers object.
+  });
+
+  // if (!session?.user.id) {
+  //   throw new Error("No user ID found in session");
+  // }
 
   const { name, email, password } = data;
 
@@ -29,9 +29,22 @@ export async function createUser(data: {
       },
     });
 
+    const userId = await prisma.user.findUnique({
+      where: {
+        name,
+        email,
+      },
+    });
+
+    if (!userId) {
+      console.error("ERROR CREATING USER SETTINGS: NO userID FOUND");
+      console.error("PLEASE MAKE SURE USER IS BEING CREATED THROUGH AUTH");
+      throw new Error("Error while creating user settings!");
+    }
+
     await prisma.settings.create({
       data: {
-        userId: session.user.id,
+        userId: userId?.id,
       },
     });
     return {

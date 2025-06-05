@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { createUser } from "@/app/actions/create-user";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Loader2Icon } from "lucide-react";
 
 const formSchema = z.object({
   name: z
@@ -66,7 +67,7 @@ export default function SignUpForm() {
       if (result.success) {
         toast.success("Account created successfully!");
         // Add a 2-second delay before redirecting
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // await new Promise((resolve) => setTimeout(resolve, 2000));
         router.push("/signin"); // Redirect to sign in page
       } else {
         toast.error(result.error || "Failed to create account");
@@ -132,13 +133,23 @@ export default function SignUpForm() {
                 </FormItem>
               )}
             />
-            <Button
+            {/* <Button
               type="submit"
               className="cursor-pointer"
               disabled={submitting}
             >
               Submit
-            </Button>
+            </Button> */}
+            {submitting ? (
+              <Button type="submit" className="cursor-pointer">
+                <Loader2Icon className="animate-spin" />
+                Creating Account...
+              </Button>
+            ) : (
+              <Button type="submit" className="cursor-pointer">
+                Create Account
+              </Button>
+            )}
           </form>
           <div className="mt-5">
             <p>

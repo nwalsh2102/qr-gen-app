@@ -1,15 +1,14 @@
-import NotAuthorizedCard from "@/components/not-authorized";
 import SettingsForm from "@/components/settings/settings-form";
-import { auth } from "@/lib/auth";
-
-import { headers } from "next/headers";
+import { getUserSettings } from "@/app/actions/get-user-settings";
+import NotAuthorizedCard from "@/components/not-authorized";
 
 export default async function Page() {
-  const session = await auth.api.getSession({
-    headers: await headers(), // you need to pass the headers object.
-  });
+  const initialSettings = await getUserSettings();
 
-  if (!session) {
+  // Optional: If you want to redirect unauthenticated users at the page level
+  if (initialSettings === null) {
+    // Assuming getUserSettings returns null for unauthenticated users
+    // You might want a different check or throw an error depending on getUserSettings implementation
     return (
       <div className="grid h-screen place-items-center">
         <NotAuthorizedCard />
@@ -19,8 +18,7 @@ export default async function Page() {
 
   return (
     <div className="grid h-screen place-items-center">
-      {/* <h1>Hello, {session.user.name}.</h1> */}
-      <SettingsForm />
+      <SettingsForm initialSettings={initialSettings} />
     </div>
   );
 }

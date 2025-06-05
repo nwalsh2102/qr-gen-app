@@ -62,7 +62,7 @@ export function NavbarAccountDropdown() {
 
   return (
     <DropdownMenu open={open} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger className="hover:bg-accent hover:text-white px-3 py-2 rounded-md cursor-pointer flex items-center gap-1 transition-colors">
+      <DropdownMenuTrigger className="hover:bg-accent hover:text-white px-3 py-2 rounded-md cursor-pointer flex items-center gap-1 transition-colors select-none">
         ACCOUNT{" "}
         <span
           className={`transition-transform duration-200 ${

@@ -63,7 +63,7 @@ export default function LogInForm() {
       if (result.success) {
         toast.success("Logged in successfully!");
         // Add a 2-second delay before redirecting
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
         window.location.replace("/codes");
         // router.push("/codes"); // Redirect to sign in page
       } else {
