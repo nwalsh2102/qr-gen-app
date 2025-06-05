@@ -4,10 +4,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { NavbarLink, NavbarAccountDropdown } from "./navbar-helpers";
-
-const linkSessionState = true;
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function Navbar() {
+  const {
+    data: session,
+    isPending, //loading state
+    error, //error object
+    refetch, //refetch the session
+  } = authClient.useSession();
+
+  const linkSessionState = session;
+
   return (
     <div className="h-15 shadow-md">
       <div className="flex justify-between px-6 py-3 items-center h-full">
@@ -17,7 +26,7 @@ export default function Navbar() {
             width={50}
             height={50}
             alt="qr-code"
-            onClick={() => redirect("/")}
+            onClick={() => window.location.replace("/")}
             className="cursor-pointer"
           />
         </div>
@@ -26,7 +35,7 @@ export default function Navbar() {
             className="text-xl font-bold select-none cursor-pointer"
             onClick={() => redirect("/")}
           >
-            QR GENERATOR
+            VERO - QR GENERATOR
           </h1>
         </div>
         <div className="w-1/3 flex justify-end gap-5">
@@ -34,7 +43,7 @@ export default function Navbar() {
             // <NavbarLink href="/account" title="Account" />
             <NavbarAccountDropdown />
           ) : (
-            <NavbarLink href="/signup" title="Sign Up" />
+            <NavbarLink href="/signin" title="SIGN IN" />
           )}
         </div>
       </div>

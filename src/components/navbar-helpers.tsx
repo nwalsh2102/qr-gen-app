@@ -9,8 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ArrowDown, ChevronDown, ChevronUp, LogOut } from "lucide-react";
+import {
+  ArrowDown,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  LogOut,
+} from "lucide-react";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 interface NavbarLinkProps {
   href: string;
@@ -22,7 +30,7 @@ export function NavbarLink({ href, title }: NavbarLinkProps) {
     <>
       <Link
         href={href}
-        className="hover:bg-accent px-3 py-2 rounded-md transition-colors"
+        className="hover:bg-accent hover:text-white px-3 py-2 rounded-md transition-colors"
       >
         {title}
       </Link>
@@ -32,6 +40,25 @@ export function NavbarLink({ href, title }: NavbarLinkProps) {
 
 export function NavbarAccountDropdown() {
   const [open, setIsOpen] = useState(false);
+  const [loggingout, setLoggingout] = useState(false);
+
+  async function handleLogout() {
+    setLoggingout(true);
+    try {
+      await authClient.signOut();
+    } catch (error: any) {
+      toast.error("Error while logging out.");
+      console.log("ERROR:", error.message);
+    }
+    setLoggingout(false);
+  }
+
+  const {
+    data: session,
+    isPending, //loading state
+    error, //error object
+    refetch, //refetch the session
+  } = authClient.useSession();
 
   return (
     <DropdownMenu open={open} onOpenChange={setIsOpen}>
@@ -47,14 +74,18 @@ export function NavbarAccountDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="select-none cursor-pointer">
         <DropdownMenuLabel className="cursor-default select-none">
-          Account
+          {session ? (
+            <span>Hello, {session.user.name}!</span>
+          ) : (
+            "YOU CANT BE HERE"
+          )}{" "}
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="cursor-none select-none" />
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={() => redirect("/codes")}
         >
-          Codes
+          All Codes
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer select-none"
@@ -62,9 +93,16 @@ export function NavbarAccountDropdown() {
         >
           Settings
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer select-none group">
+        <DropdownMenuItem
+          className="cursor-pointer select-none group"
+          onClick={handleLogout}
+        >
           Sign Out{" "}
-          <LogOut className="group-hover:text-white transition-colors delay-20" />
+          {loggingout ? (
+            <Loader2 className="group-hover:text-white transition-colors delay-20 animate-spin" />
+          ) : (
+            <LogOut className="group-hover:text-white transition-colors delay-20" />
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

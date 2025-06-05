@@ -1,9 +1,9 @@
-import LogInForm from "@/components/accounts/login-form";
+import SignUpForm from "@/components/accounts/sign-up-form";
 
 export default function Page() {
   return (
     <div className="grid h-screen place-items-center">
-      <LogInForm />
+      <SignUpForm />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
 
 export async function generateQRCode(url: string) {
